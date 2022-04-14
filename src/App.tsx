@@ -1,25 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { SetStateAction } from "react";
+import { Box } from "@mui/material";
+import Header from "./Header";
+import "./App.css";
+import List from "./List";
+import AddStudent from "./AddStudent";
+import axios from "axios";
 
 function App() {
+  const [showModal, setShowModal] = React.useState(false);
+  const [students, setStudents] = React.useState([]);
+
+  React.useEffect(() => {
+    axios.get("http://localhost:8080/students").then(({ data }) => {
+      setStudents(data);
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box
+      sx={(theme) => ({
+        minHeight: "100vh",
+        bgcolor: theme.palette.background.default,
+      })}
+    >
+      <Header showform={() => setShowModal(true)} />
+      <List rows={students} />
+      <AddStudent
+        visible={showModal}
+        cleanup={() => setShowModal(false)}
+        updateList={(newVal: SetStateAction<never[]>) => setStudents(newVal)}
+      />
+    </Box>
   );
 }
 
